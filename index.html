@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Heart Animation with Button</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: black;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    audio {
+      display: none;
+    }
+
+    /* Centered Start Button */
+    #startContainer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    #startButton {
+      padding: 16px 32px;
+      background: hotpink;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 20px #ff69b4;
+      transition: all 0.3s ease;
+    }
+
+    #startButton:hover {
+      background: deeppink;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Centered Start Button -->
+<div id="startContainer">
+  <button id="startButton">Start Animation & Music</button>
+</div>
+
+<!-- Music -->
+<audio id="bg-music" loop>
+  <source src="heart.mp3.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+<!-- Canvas for animation -->
+<canvas id="canvas"></canvas>
+
+<script>
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const audio = document.getElementById("bg-music");
+  const playBtn = document.getElementById("startButton");
+  const startContainer = document.getElementById("startContainer");
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const w = canvas.width;
+  const h = canvas.height;
+
+  let particles = [];
+  const heartPath = [];
+
+  for (let t = 0; t < Math.PI * 2; t += 0.02) {
+    const x = 16 * Math.pow(Math.sin(t), 3);
+    const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+    heartPath.push({
+      x: x * 20 + w / 2,
+      y: -y * 20 + h / 2
+    });
+  }
+
+  function createParticle() {
+    const angle = Math.random() * 2 * Math.PI;
+    const radius = Math.random() * 300;
+    const x = Math.cos(angle) * radius + w / 2;
+    const y = Math.sin(angle) * radius + h / 2;
+
+    const target = heartPath[Math.floor(Math.random() * heartPath.length)];
+
+    particles.push({
+      x,
+      y,
+      tx: target.x,
+      ty: target.y,
+      vx: 0,
+      vy: 0,
+      life: 0,
+      maxLife: 150 + Math.random() * 50
+    });
+  }
+
+  function animate() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    ctx.fillRect(0, 0, w, h);
+
+    while (particles.length < 400) {
+      createParticle();
+    }
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      const dx = p.tx - p.x;
+      const dy = p.ty - p.y;
+
+      p.vx += dx * 0.003;
+      p.vy += dy * 0.003;
+
+      p.vx *= 0.88;
+      p.vy *= 0.88;
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      p.life++;
+
+      const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 12);
+      grd.addColorStop(0, "rgba(255,105,180,1)");
+      grd.addColorStop(1, "rgba(255,20,147,0)");
+
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (p.life > p.maxLife) {
+        particles.splice(i, 1);
+        i--;
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  // Start on button click
+  playBtn.addEventListener("click", () => {
+    audio.play().catch(e => console.log("Autoplay error:", e));
+    startContainer.remove();
+    animate();
+  });
+</script>
+
+</body>
+</html>
