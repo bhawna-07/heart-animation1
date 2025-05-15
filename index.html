@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Heart Animation with Button</title>
+  <title>Heart Animation</title>
   <style>
     body, html {
       margin: 0;
@@ -15,56 +15,9 @@
     canvas {
       display: block;
     }
-
-    audio {
-      display: none;
-    }
-
-    /* Centered Start Button */
-    #startContainer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100vh;
-      width: 100vw;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.7);
-    }
-
-    #startButton {
-      padding: 16px 32px;
-      background: hotpink;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 0 20px #ff69b4;
-      transition: all 0.3s ease;
-    }
-
-    #startButton:hover {
-      background: deeppink;
-      transform: scale(1.05);
-    }
   </style>
 </head>
 <body>
-
-<!-- Centered Start Button -->
-<div id="startContainer">
-  <button id="startButton">Start Animation & Music</button>
-</div>
-
-<!-- Music -->
-<audio id="bg-music" loop>
-  <source src="heart.mp3.mp3" type="audio/mpeg">
-  Your browser does not support the audio element.
-</audio>
 
 <!-- Canvas for animation -->
 <canvas id="canvas"></canvas>
@@ -72,9 +25,6 @@
 <script>
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
-  const audio = document.getElementById("bg-music");
-  const playBtn = document.getElementById("startButton");
-  const startContainer = document.getElementById("startContainer");
 
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -156,12 +106,8 @@
     requestAnimationFrame(animate);
   }
 
-  // Start on button click
-  playBtn.addEventListener("click", () => {
-    audio.play().catch(e => console.log("Autoplay error:", e));
-    startContainer.remove();
-    animate();
-  });
+  // Start animation immediately
+  animate();
 </script>
 
 </body>
